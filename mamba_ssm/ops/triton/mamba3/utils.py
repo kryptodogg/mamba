@@ -13,79 +13,37 @@ import triton.language as tl
 @triton.jit
 def cos_approx(x):
     """
-    (Fast) Cosine approximation using PTX inline assembly.
+    Cosine using Triton-native math (gfx1031-safe).
 
-    Args:
-        x: Input triton tensor (any shape) in float32
-    Returns:
-        Approximate cosine values in float32
+    The upstream PTX inline-assembly version (``cos.approx.f32``) cannot be
+    lowered by the HIP compiler on RDNA2 (gfx1030/gfx1031).  We use the
+    standard Triton built-in which is slightly slower but portable.
     """
-    return tl.inline_asm_elementwise(
-        "cos.approx.f32 $0, $1;",
-        constraints="=f,f",
-        args=[x],
-        dtype=tl.float32,
-        is_pure=True,
-        pack=1,
-    )
+    return tl.cos(x.to(tl.float32))
 
 
 @triton.jit
 def sin_approx(x):
     """
-    (Fast) Sine approximation using PTX inline assembly.
-
-    Args:
-        x: Input triton tensor (any shape) in float32
-    Returns:
-        Approximate sine values in float32
+    Sine using Triton-native math (gfx1031-safe).
     """
-    return tl.inline_asm_elementwise(
-        "sin.approx.f32 $0, $1;",
-        constraints="=f,f",
-        args=[x],
-        dtype=tl.float32,
-        is_pure=True,
-        pack=1,
-    )
+    return tl.sin(x.to(tl.float32))
+
 
 @triton.jit
 def tanh_approx(x):
     """
-    (Fast) hyperbolic tangent approximation using PTX inline assembly.
-
-    Args:
-        x: Input triton tensor (any shape) in float32
-    Returns:
-        Approximate tanh values in float32
+    tanh using Triton-native math (gfx1031-safe).
     """
-    return tl.inline_asm_elementwise(
-        "tanh.approx.f32 $0, $1;",
-        constraints="=f,f",
-        args=[x],
-        dtype=tl.float32,
-        is_pure=True,
-        pack=1,
-    )
+    return 2.0 * tl.sigmoid(2.0 * x.to(tl.float32)) - 1.0
+
 
 @triton.jit
 def sech2_approx(x):
     """
-    (Fast) square of the hyperbolic secant approximation using PTX inline assembly.
-
-    Args:
-        x: Input triton tensor (any shape) in float32
-    Returns:
-        Approximate sech^2 values in float32
+    sech^2 using Triton-native math (gfx1031-safe).
     """
-    tanh_x = tl.inline_asm_elementwise(
-        "tanh.approx.f32 $0, $1;",
-        constraints="=f,f",
-        args=[x],
-        dtype=tl.float32,
-        is_pure=True,
-        pack=1,
-    )
+    tanh_x = tanh_approx(x)
     return 1.0 - tanh_x * tanh_x
 
 @triton.jit

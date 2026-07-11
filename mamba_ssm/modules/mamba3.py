@@ -11,7 +11,7 @@ from mamba_ssm.ops.triton.layernorm_gated import RMSNorm as RMSNormGated
 
 try:
     from mamba_ssm.ops.tilelang.mamba3.mamba3_mimo import mamba3_mimo as mamba3_mimo_combined
-except ImportError:
+except (ImportError, AttributeError):
     mamba3_mimo_combined = None
 
 from mamba_ssm.ops.triton.mamba3.mamba3_siso_combined import mamba3_siso_combined
@@ -20,7 +20,7 @@ from mamba_ssm.ops.triton.mamba3.mamba3_mimo_rotary_step import apply_rotary_qk_
 
 try:
     from mamba_ssm.ops.cute.mamba3.mamba3_step_fn import mamba3_step_fn
-except ImportError:    
+except (ImportError, AttributeError):
     mamba3_step_fn = None
 
 
@@ -86,8 +86,9 @@ class Mamba3(nn.Module):
         )
         if not self.is_mimo:
             self.mimo_rank = 1
-        else:
-            assert mamba3_mimo_combined is not None, "Fails to import Mamba-3 MIMO kernels. Please ensure you installed the necessary dependencies, such as TileLang."
+        # Defer the TileLang assertion to first forward call instead of
+        # construction time, so Mamba3 can still be instantiated on
+        # gfx1031 where TileLang is unavailable.
 
         self.d_inner = int(self.expand * self.d_model)
         assert self.d_inner % self.headdim == 0

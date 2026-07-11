@@ -1,0 +1,581 @@
+{
+  "module_params": {
+    "d_ssm": 256,
+    "nheads": 4,
+    "headdim": 64,
+    "ngroups": 1,
+    "d_state": 16,
+    "d_conv": 4,
+    "conv_dim": 288,
+    "d_in_proj": 548,
+    "d_mlp": 0,
+    "d_model": 128
+  },
+  "batch": 1,
+  "seqlen": 64,
+  "tensors": [
+    {
+      "name": "zxbcdt",
+      "shape": [
+        1,
+        64,
+        548
+      ],
+      "stride": [
+        35072,
+        548,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "cuda:0",
+      "is_contiguous": true,
+      "storage_offset": 0,
+      "element_size": 2,
+      "nbytes": 70144,
+      "data_ptr_mod_16": 0,
+      "data_ptr_mod_32": 0
+    },
+    {
+      "name": "z (pre-rearrange)",
+      "shape": [
+        1,
+        64,
+        256
+      ],
+      "stride": [
+        35072,
+        548,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "cuda:0",
+      "is_contiguous": false,
+      "storage_offset": 0,
+      "element_size": 2,
+      "nbytes": 32768,
+      "data_ptr_mod_16": 0,
+      "data_ptr_mod_32": 0
+    },
+    {
+      "name": "xBC (pre-conv)",
+      "shape": [
+        1,
+        64,
+        288
+      ],
+      "stride": [
+        35072,
+        548,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "cuda:0",
+      "is_contiguous": false,
+      "storage_offset": 256,
+      "element_size": 2,
+      "nbytes": 36864,
+      "data_ptr_mod_16": 0,
+      "data_ptr_mod_32": 0
+    },
+    {
+      "name": "dt (raw)",
+      "shape": [
+        1,
+        64,
+        4
+      ],
+      "stride": [
+        35072,
+        548,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "cuda:0",
+      "is_contiguous": false,
+      "storage_offset": 544,
+      "element_size": 2,
+      "nbytes": 512,
+      "data_ptr_mod_16": 0,
+      "data_ptr_mod_32": 0
+    },
+    {
+      "name": "xBC (post ensure_stride)",
+      "shape": [
+        1,
+        64,
+        288
+      ],
+      "stride": [
+        18432,
+        288,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "cuda:0",
+      "is_contiguous": true,
+      "storage_offset": 0,
+      "element_size": 2,
+      "nbytes": 36864,
+      "data_ptr_mod_16": 0,
+      "data_ptr_mod_32": 0
+    },
+    {
+      "name": "xBC_conv (projected shape, no kernel call)",
+      "shape": [
+        1,
+        64,
+        288
+      ],
+      "note": "Would be produced by causal_conv1d_fwd_function"
+    },
+    {
+      "name": "x (projected)",
+      "shape": [
+        1,
+        64,
+        256
+      ]
+    },
+    {
+      "name": "B (projected)",
+      "shape": [
+        1,
+        64,
+        16
+      ]
+    },
+    {
+      "name": "C (projected)",
+      "shape": [
+        1,
+        64,
+        16
+      ]
+    },
+    {
+      "name": "x (rearranged B,L,H,P)",
+      "shape": [
+        1,
+        64,
+        4,
+        64
+      ],
+      "stride": [
+        16384,
+        256,
+        64,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "cuda:0",
+      "is_contiguous": true,
+      "storage_offset": 0,
+      "element_size": 2,
+      "nbytes": 32768,
+      "data_ptr_mod_16": 0,
+      "data_ptr_mod_32": 0
+    },
+    {
+      "name": "B (rearranged B,L,G,N)",
+      "shape": [
+        1,
+        64,
+        1,
+        16
+      ],
+      "stride": [
+        1024,
+        16,
+        16,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "cuda:0",
+      "is_contiguous": true,
+      "storage_offset": 0,
+      "element_size": 2,
+      "nbytes": 2048,
+      "data_ptr_mod_16": 0,
+      "data_ptr_mod_32": 0
+    },
+    {
+      "name": "conv1d_weight",
+      "shape": [
+        288,
+        1,
+        4
+      ],
+      "stride": [
+        4,
+        4,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "cuda:0",
+      "is_contiguous": true,
+      "storage_offset": 0,
+      "element_size": 2,
+      "nbytes": 2304,
+      "data_ptr_mod_16": 0,
+      "data_ptr_mod_32": 0
+    },
+    {
+      "name": "conv1d_weight (rearr d->d w)",
+      "shape": [
+        288,
+        4
+      ],
+      "stride": [
+        4,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "cuda:0",
+      "is_contiguous": true,
+      "storage_offset": 0,
+      "element_size": 2,
+      "nbytes": 2304,
+      "data_ptr_mod_16": 0,
+      "data_ptr_mod_32": 0
+    },
+    {
+      "name": "conv1d_bias",
+      "shape": [
+        288
+      ],
+      "stride": [
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "cuda:0",
+      "is_contiguous": true,
+      "storage_offset": 0,
+      "element_size": 2,
+      "nbytes": 576,
+      "data_ptr_mod_16": 0,
+      "data_ptr_mod_32": 0
+    },
+    {
+      "name": "dt_bias",
+      "shape": [
+        4
+      ],
+      "stride": [
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "cuda:0",
+      "is_contiguous": true,
+      "storage_offset": 0,
+      "element_size": 2,
+      "nbytes": 8,
+      "data_ptr_mod_16": 0,
+      "data_ptr_mod_32": 0
+    },
+    {
+      "name": "seq_idx",
+      "shape": [
+        1,
+        64
+      ],
+      "stride": [
+        64,
+        1
+      ],
+      "dtype": "torch.int32",
+      "device": "cuda:0",
+      "is_contiguous": true,
+      "storage_offset": 0,
+      "element_size": 4,
+      "nbytes": 256,
+      "data_ptr_mod_16": 0,
+      "data_ptr_mod_32": 0
+    }
+  ],
+  "checks": [
+    {
+      "check": "zxbcdt_last_dim",
+      "expected": 548,
+      "actual": 548,
+      "pass": true
+    },
+    {
+      "check": "z_shape_split",
+      "expected": [
+        1,
+        64,
+        256
+      ],
+      "actual": [
+        1,
+        64,
+        256
+      ],
+      "pass": true
+    },
+    {
+      "check": "xBC_shape_split",
+      "expected": [
+        1,
+        64,
+        288
+      ],
+      "actual": [
+        1,
+        64,
+        288
+      ],
+      "pass": true
+    },
+    {
+      "check": "dt_shape_split",
+      "expected": [
+        1,
+        64,
+        4
+      ],
+      "actual": [
+        1,
+        64,
+        4
+      ],
+      "pass": true
+    },
+    {
+      "check": "ensure_stride",
+      "channels_mod_8": 0,
+      "stride_1_mod_8": 4,
+      "action": "forced_contiguous",
+      "pass": false
+    },
+    {
+      "check": "conv1d_weight_dim0",
+      "expected": 288,
+      "actual": 288,
+      "pass": true
+    },
+    {
+      "check": "conv1d_weight_dim1",
+      "expected": 4,
+      "actual": 4,
+      "pass": true
+    },
+    {
+      "check": "conv1d_bias_shape",
+      "expected": 288,
+      "actual": 288,
+      "pass": true
+    },
+    {
+      "check": "dt_bias_shape",
+      "expected": 4,
+      "actual": 4,
+      "pass": true
+    },
+    {
+      "check": "seq_idx_shape",
+      "expected": [
+        1,
+        64
+      ],
+      "actual": [
+        1,
+        64
+      ],
+      "pass": true
+    },
+    {
+      "check": "seq_idx_dtype",
+      "expected": "torch.int32",
+      "actual": "torch.int32",
+      "pass": true
+    },
+    {
+      "check": "seq_idx_contiguous",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "summary": {
+    "all_checks_pass": false,
+    "total_checks": 12,
+    "failed_checks": [
+      "ensure_stride"
+    ],
+    "next_step": "fix failed checks before kernel launch"
+  },
+  "separate_path_ledger": [
+    {
+      "name": "z0",
+      "shape": [
+        1,
+        64,
+        0
+      ],
+      "stride": [
+        35072,
+        548,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "cuda:0",
+      "is_contiguous": true,
+      "storage_offset": 0,
+      "element_size": 2,
+      "nbytes": 0,
+      "data_ptr_mod_16": 0,
+      "data_ptr_mod_32": 0
+    },
+    {
+      "name": "x0",
+      "shape": [
+        1,
+        64,
+        0
+      ],
+      "stride": [
+        35072,
+        548,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "cuda:0",
+      "is_contiguous": true,
+      "storage_offset": 0,
+      "element_size": 2,
+      "nbytes": 0,
+      "data_ptr_mod_16": 0,
+      "data_ptr_mod_32": 0
+    },
+    {
+      "name": "z_sep",
+      "shape": [
+        1,
+        64,
+        256
+      ],
+      "stride": [
+        35072,
+        548,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "cuda:0",
+      "is_contiguous": false,
+      "storage_offset": 0,
+      "element_size": 2,
+      "nbytes": 32768,
+      "data_ptr_mod_16": 0,
+      "data_ptr_mod_32": 0
+    },
+    {
+      "name": "xBC_sep",
+      "shape": [
+        1,
+        64,
+        288
+      ],
+      "stride": [
+        35072,
+        548,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "cuda:0",
+      "is_contiguous": false,
+      "storage_offset": 256,
+      "element_size": 2,
+      "nbytes": 36864,
+      "data_ptr_mod_16": 0,
+      "data_ptr_mod_32": 0
+    },
+    {
+      "name": "dt_sep",
+      "shape": [
+        1,
+        64,
+        4
+      ],
+      "stride": [
+        35072,
+        548,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "cuda:0",
+      "is_contiguous": false,
+      "storage_offset": 544,
+      "element_size": 2,
+      "nbytes": 512,
+      "data_ptr_mod_16": 0,
+      "data_ptr_mod_32": 0
+    },
+    {
+      "name": "xBC_sep ensure_stride_audit",
+      "channels_mod_8": 0,
+      "stride_1_mod_8": 4,
+      "action": "forced_contiguous",
+      "note": "Same stride issue as fused path but no ensure_stride gate \u2192 this is why the separate path crashes"
+    },
+    {
+      "name": "x_sep (projected)",
+      "shape": [
+        1,
+        64,
+        256
+      ]
+    },
+    {
+      "name": "B_sep (projected)",
+      "shape": [
+        1,
+        64,
+        16
+      ]
+    },
+    {
+      "name": "C_sep (projected)",
+      "shape": [
+        1,
+        64,
+        16
+      ]
+    }
+  ],
+  "fused_vs_separate": {
+    "note": "Same zxbcdt input. Split tensors should be byte-identical before any kernel launch. Stride mismatch is the root cause of separate-path crash.",
+    "fused_xBC": {
+      "shape": [
+        1,
+        64,
+        288
+      ],
+      "stride": [
+        35072,
+        548,
+        1
+      ]
+    },
+    "sep_xBC": {
+      "shape": [
+        1,
+        64,
+        288
+      ],
+      "stride": [
+        35072,
+        548,
+        1
+      ]
+    },
+    "stride_match": true
+  },
+  "separate_path_output": {
+    "status": "crash",
+    "error_type": "SIGSEGV",
+    "returncode": 139,
+    "stderr_tail": ".13.13/Modules/main.c\", line 410, in pymain_run_file_obj\n  File \"/usr/local/src/conda/python-3.13.13/Modules/main.c\", line 429, in pymain_run_file\n  File \"/usr/local/src/conda/python-3.13.13/Modules/main.c\", line 696, in pymain_run_python\n  File \"/usr/local/src/conda/python-3.13.13/Modules/main.c\", line 775, in Py_RunMain\n  File \"/usr/local/src/conda/python-3.13.13/Modules/main.c\", line 829, in Py_BytesMain\n  File \"<unknown>\", line 0, in _start\n  File \"<unknown>\", line 0, in 0xffffffffffffffff\n\n",
+    "note": "SIGSEGV at causal_conv1d_fwd_launch \u2014 HIPified kernel crashes on gfx1030. Stride fix applied (contiguous gate in separate path), contract validated. Kernel compatibility: CONFIRMED NOT WORKING."
+  }
+}
