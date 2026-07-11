@@ -27,19 +27,19 @@ except ImportError:
 # upstream C extensions are known to crash on gfx1030/gfx1031.
 # NOTE: selective_state_update is NOT replaced — it passes upstream on gfx1031.
 try:
-    from mamba_ssm.ops.gfx1031 import (
-        IS_GFX1031,
-        get_causal_conv1d_adapter,
-        get_causal_conv1d_update_adapter,
-        get_causal_conv1d_varlen_states_adapter,
-    )
+    from mamba_ssm.ops.gfx1031 import IS_GFX1031
 except ImportError:
     IS_GFX1031 = False
 
 if IS_GFX1031:
-    causal_conv1d_fn = get_causal_conv1d_adapter()
-    causal_conv1d_update = get_causal_conv1d_update_adapter()
-    causal_conv1d_varlen_states = get_causal_conv1d_varlen_states_adapter()
+    # Tier 0 baseline: force PyTorch nn.Conv1d fallback (line 250).
+    # The upstream Triton SSD stack (mamba_chunk_scan_combined) works on
+    # gfx1030, but the HIPified causal_conv1d extension does not.
+    # Setting these to None routes through the safe PyTorch depthwise
+    # convolution branch, preserving the upstream Triton recurrence.
+    causal_conv1d_fn = None
+    causal_conv1d_update = None
+    causal_conv1d_varlen_states = None
 
 from mamba_ssm.ops.triton.layernorm_gated import RMSNorm as RMSNormGated
 
@@ -252,7 +252,7 @@ class Mamba2(nn.Module, PyTorchModelHubMixin):
                 )  # (B, L, self.d_ssm + 2 * ngroups * d_state)
             else:
                 xBC = causal_conv1d_fn(
-                    xBC.transpose(1, 2),
+                    xBC.transpose(1, 2).contiguous(),
                     rearrange(self.conv1d.weight, "d 1 w -> d w"),
                     bias=self.conv1d.bias,
                     activation=self.activation,
