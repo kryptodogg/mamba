@@ -86,8 +86,9 @@ class Mamba3(nn.Module):
         )
         if not self.is_mimo:
             self.mimo_rank = 1
-        else:
-            assert mamba3_mimo_combined is not None, "Fails to import Mamba-3 MIMO kernels. Please ensure you installed the necessary dependencies, such as TileLang."
+        # Defer the TileLang assertion to first forward call instead of
+        # construction time, so Mamba3 can still be instantiated on
+        # gfx1031 where TileLang is unavailable.
 
         self.d_inner = int(self.expand * self.d_model)
         assert self.d_inner % self.headdim == 0

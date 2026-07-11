@@ -23,6 +23,24 @@ try:
 except ImportError:
     selective_state_update = None
 
+# gfx1031 (RDNA2) source-level dispatch: use chakra Triton fallbacks when the
+# upstream C extensions are known to crash on gfx1030/gfx1031.
+# NOTE: selective_state_update is NOT replaced — it passes upstream on gfx1031.
+try:
+    from mamba_ssm.ops.gfx1031 import (
+        IS_GFX1031,
+        get_causal_conv1d_adapter,
+        get_causal_conv1d_update_adapter,
+        get_causal_conv1d_varlen_states_adapter,
+    )
+except ImportError:
+    IS_GFX1031 = False
+
+if IS_GFX1031:
+    causal_conv1d_fn = get_causal_conv1d_adapter()
+    causal_conv1d_update = get_causal_conv1d_update_adapter()
+    causal_conv1d_varlen_states = get_causal_conv1d_varlen_states_adapter()
+
 from mamba_ssm.ops.triton.layernorm_gated import RMSNorm as RMSNormGated
 
 from mamba_ssm.distributed.tensor_parallel import ColumnParallelLinear, RowParallelLinear
@@ -89,7 +107,7 @@ class Mamba2(nn.Module, PyTorchModelHubMixin):
         self.dt_limit = dt_limit
         self.activation = "silu"
         self.chunk_size = chunk_size
-        self.use_mem_eff_path = use_mem_eff_path
+        self.use_mem_eff_path = use_mem_eff_path and not IS_GFX1031
         self.layer_idx = layer_idx
 
         # Order: [z, x, B, C, dt]

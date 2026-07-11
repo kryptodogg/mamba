@@ -17,6 +17,22 @@ try:
 except ImportError:
     causal_conv1d_fn, causal_conv1d_update = None, None
 
+# gfx1031 (RDNA2) source-level dispatch: use chakra Triton fallbacks when the
+# upstream C extensions are known to crash on gfx1030/gfx1031.
+# NOTE: selective_state_update is NOT replaced — it passes upstream on gfx1031.
+try:
+    from mamba_ssm.ops.gfx1031 import (
+        IS_GFX1031,
+        get_causal_conv1d_adapter,
+        get_causal_conv1d_update_adapter,
+    )
+except ImportError:
+    IS_GFX1031 = False
+
+if IS_GFX1031:
+    causal_conv1d_fn = get_causal_conv1d_adapter()
+    causal_conv1d_update = get_causal_conv1d_update_adapter()
+
 try:
     from mamba_ssm.ops.triton.selective_state_update import selective_state_update
 except ImportError:
@@ -56,7 +72,7 @@ class Mamba(nn.Module):
         self.expand = expand
         self.d_inner = int(self.expand * self.d_model)
         self.dt_rank = math.ceil(self.d_model / 16) if dt_rank == "auto" else dt_rank
-        self.use_fast_path = use_fast_path
+        self.use_fast_path = use_fast_path and not IS_GFX1031
         self.layer_idx = layer_idx
 
         self.in_proj = nn.Linear(self.d_model, self.d_inner * 2, bias=bias, **factory_kwargs)
