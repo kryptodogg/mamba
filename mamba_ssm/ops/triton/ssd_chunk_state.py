@@ -4,6 +4,7 @@
 """
 
 import math
+import os
 import torch
 import torch.nn.functional as F
 
@@ -1029,8 +1030,25 @@ def chunk_state_varlen(B, x, dt, dA_cumsum, cu_seqlens, chunk_states):
     states = torch.empty(batch, nheads, headdim, dstate, dtype=chunk_states.dtype, device=chunk_states.device)
     grid = lambda META: (triton.cdiv(headdim, META['BLOCK_SIZE_M']) * triton.cdiv(dstate, META['BLOCK_SIZE_N']),
                     batch, nheads)
+    # On gfx1031, the individual upstream configurations complete, but the
+    # first-use autotune sweep can hang while it benchmarks them on the ROCm
+    # queue. Keep upstream autotuning as the default and bypass only that
+    # sweep when the explicit compatibility path is enabled.
+    use_gfx1031_config = os.environ.get("MAMBA_GFX1031", "").lower() in {"1", "true", "yes"}
+    kernel = _chunk_state_varlen_kernel.fn if use_gfx1031_config else _chunk_state_varlen_kernel
+    launch_kwargs = (
+        {
+            "BLOCK_SIZE_M": 64,
+            "BLOCK_SIZE_N": 32,
+            "BLOCK_SIZE_K": 32,
+            "num_warps": 2,
+            "num_stages": 5,
+        }
+        if use_gfx1031_config
+        else {}
+    )
     with torch.cuda.device(x.device.index):
-        _chunk_state_varlen_kernel[grid](
+        kernel[grid](
             x, B, dt, dA_cumsum, chunk_states, cu_seqlens, states,
             headdim, dstate, chunk_size,
             total_seqlen, nheads // ngroups,
@@ -1040,6 +1058,7 @@ def chunk_state_varlen(B, x, dt, dA_cumsum, cu_seqlens, chunk_states):
             dA_cumsum.stride(1), dA_cumsum.stride(0), dA_cumsum.stride(2),
             chunk_states.stride(0), chunk_states.stride(1), chunk_states.stride(2), chunk_states.stride(3),
             states.stride(0), states.stride(1), states.stride(2), states.stride(3),
+            **launch_kwargs,
         )
     return states
 
