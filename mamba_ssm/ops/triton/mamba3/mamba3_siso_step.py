@@ -222,8 +222,6 @@ def mamba3_siso_step_kernel(
     tl.store(o_ptr + offs_v * stride_o_vdim, out)
 
 
-
-
 # Memory Allocator for TMA Descriptors
 def _alloc_fn(size: int, alignment: int, stream: Optional[int]):
     """Custom allocator for TMA descriptor global memory allocation."""

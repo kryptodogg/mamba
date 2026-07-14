@@ -372,8 +372,7 @@ print(json.dumps({{"status": "pass", "shape": list(out.shape), "dtype": str(out.
     try:
         result = _sp.run(["uv", "run", "python", _sep_path],
                          capture_output=True, text=True, timeout=60,
-                         env={**os.environ, "HSA_OVERRIDE_GFX_VERSION": "10.3.0",
-                              "HSA_ENABLE_SDMA": "0", "MAMBA_GFX1031": "0"})
+                         env={**os.environ, "MAMBA_GFX1031": "0"})
         if result.returncode == 0:
             ledger["separate_path_output"] = json.loads(result.stdout.strip())
         elif result.returncode < 0 or result.returncode > 128 or "SIGSEGV" in str(result.stderr):

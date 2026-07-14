@@ -309,8 +309,9 @@ def get_selective_scan_adapter() -> Callable:
 
 
 def get_causal_conv1d_adapter() -> Callable:
-    from chakra.ssm.compat.gfx1031_patches import _patched_causal_conv1d_fn
-    return _patched_causal_conv1d_fn
+    # Canonical surface — the gfx1031_patches shim is deprecated.
+    from chakra.kernels.interface import causal_conv1d_fn
+    return causal_conv1d_fn
 
 
 def get_causal_conv1d_fwd_function_adapter() -> Callable:

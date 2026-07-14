@@ -29,7 +29,6 @@ def select(a: cute.Tensor, mode: List[int]) -> cute.Tensor:
     return cute.make_tensor(a.iterator, cute.select(a.layout, mode))
 
 
-
 def get_gmem_tiled_copy(dtype: Type[cutlass.Numeric], major_mode_size: int, num_threads: int, is_async: bool = True):
     num_copy_bits = math.gcd(major_mode_size, 128 // dtype.width) * dtype.width
     copy_elems = num_copy_bits // dtype.width

@@ -111,7 +111,6 @@ def mamba3_siso_bwd_kernel_dzdo(
     tl.store(do_scaled_ptrs, do_block, mask=mask)
 
 
-
 def compute_dzdo(
     do: torch.Tensor,
     z: torch.Tensor,

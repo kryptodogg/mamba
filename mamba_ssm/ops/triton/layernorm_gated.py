@@ -147,7 +147,6 @@ def _layer_norm_fwd(x, weight, bias, eps, z=None, out=None, group_size=None, nor
     return out, mean, rstd
 
 
-
 @triton.heuristics({"HAS_BIAS": lambda args: args["B"] is not None})
 @triton.heuristics({"HAS_Z": lambda args: args["Z"] is not None})
 @triton.heuristics({"RECOMPUTE_OUTPUT": lambda args: args["Y"] is not None})

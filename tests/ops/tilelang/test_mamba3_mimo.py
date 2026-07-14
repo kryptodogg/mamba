@@ -322,7 +322,6 @@ def grads_to_dA(grad_dA_cs: Tensor, grad_dA_cs_rev: Tensor, chunk_size: int) -> 
     return (grad_from_f + grad_from_r).view(b, h, s)
 
 
-
 def mamba3_MIMO_step_ref(
     Q: torch.Tensor,
     K: torch.Tensor,

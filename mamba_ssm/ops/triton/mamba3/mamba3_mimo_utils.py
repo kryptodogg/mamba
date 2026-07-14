@@ -52,7 +52,6 @@ import math
 from typing import Optional, Tuple
 
 
-
 # ============================================================================
 # Kernel group 1 (dense): fused reverse-cumsum + forward-exclusive-cumsum
 #   bwd_dadt_cumsum_fused_kernel        – dense (fixed-length)

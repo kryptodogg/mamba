@@ -27,9 +27,6 @@ warnings.filterwarnings("ignore")
 logging.disable(logging.WARNING)
 
 
-
-
-
 BATCH = 128
 SEQLEN = 32
 NHEADS = 64
